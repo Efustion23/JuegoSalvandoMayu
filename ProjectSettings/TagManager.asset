@@ -2,8 +2,10 @@
 %TAG !u! tag:unity3d.com,2011:
 --- !u!78 &1
 TagManager:
-  serializedVersion: 2
-  tags: []
+  serializedVersion: 3
+  tags:
+  - Item
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -11,6 +13,9 @@ TagManager:
   - 
   - Water
   - UI
+  - character
+  - interactable
+  - bottom
   - 
   - 
   - 
@@ -33,11 +38,40 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
+  - InteractiveObject
   m_SortingLayers:
+  - name: Bottom
+    uniqueID: 1161173501
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Objects
+    uniqueID: 1471039481
+    locked: 0
+  - name: ObjectsFront
+    uniqueID: 3561676937
+    locked: 0
+  - name: Foreground
+    uniqueID: 1304480043
+    locked: 0
+  - name: Ground
+    uniqueID: 400494371
+    locked: 0
+  - name: WalkinFront
+    uniqueID: 3263397359
+    locked: 0
+  - name: Collision
+    uniqueID: 348466903
+    locked: 0
+  - name: Player
+    uniqueID: 1912864265
+    locked: 0
+  - name: WalkBehind
+    uniqueID: 3359221351
+    locked: 0
+  - name: Decoration
+    uniqueID: 2578905283
+    locked: 0
+  m_RenderingLayers:
+  - Default
