@@ -309,10 +309,10 @@ public class GameManager : MonoBehaviour
     {
         purityText.text = $"Pureza {Purity.Purity:0}%";
         int t = Mathf.CeilToInt(Mathf.Max(0f, timeLeft));
-        timeText.text = State == GamePhase.Tutorial ? "Tutorial" : $"Sector {sectorIndex + 1} · {t / 60}:{t % 60:00}";
-        creditsText.text = $"Eco-Créditos {Credits}";
-        backpackText.text = $"Mochila {backpack.Count}/{backpack.Capacity}";
-        statsText.text = $"Ahuyentados {Scared} · Al río {Polluted} · Racha x{Streak}";
+        timeText.text = State == GamePhase.Tutorial ? "Tutorial" : $"S{sectorIndex + 1} {t / 60}:{t % 60:00}";
+        creditsText.text = $"{Credits}";
+        backpackText.text = $"{backpack.Count}/{backpack.Capacity}";
+        statsText.text = $"Fuera {Scared} Río {Polluted} Racha x{Streak}";
     }
 
     void TickTimer()
