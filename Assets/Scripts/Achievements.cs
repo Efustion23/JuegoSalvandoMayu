@@ -163,8 +163,8 @@ public class Achievements : MonoBehaviour
         toast.SetParent(transform, false);
         toast.anchorMin = toast.anchorMax = new Vector2(0.5f, 1f);
         toast.pivot = new Vector2(0.5f, 1f);
-        toast.sizeDelta = new Vector2(560f, 84f);
-        toast.anchoredPosition = new Vector2(0f, -150f);
+        toast.sizeDelta = new Vector2(450f, 84f);
+        toast.anchoredPosition = new Vector2(0f, -14f);
         var bg = g.GetComponent<Image>(); bg.color = new Color(0.07f, 0.1f, 0.18f, 0.95f); bg.raycastTarget = false;
         var ol = g.GetComponent<Outline>(); ol.effectColor = new Color(1f, 0.82f, 0.25f, 1f); ol.effectDistance = new Vector2(3f, -3f);
         var icon = new GameObject("Icono", typeof(RectTransform), typeof(Image));
@@ -173,8 +173,8 @@ public class Achievements : MonoBehaviour
         irt.anchorMin = irt.anchorMax = new Vector2(0f, 0.5f);
         irt.sizeDelta = new Vector2(60f, 60f); irt.anchoredPosition = new Vector2(46f, 0f);
         var im = icon.GetComponent<Image>(); im.sprite = StarSprite(true); im.raycastTarget = false;
-        toastTitle = MakeText(toast, "Titulo", 17, TextAnchor.MiddleLeft, new Color(1f, 0.82f, 0.25f), new Vector2(440f, 26f), new Vector2(48f, 20f));
-        toastName = MakeText(toast, "Nombre", 26, TextAnchor.MiddleLeft, Color.white, new Vector2(440f, 36f), new Vector2(48f, -14f));
+        toastTitle = MakeText(toast, "Titulo", 17, TextAnchor.MiddleLeft, new Color(1f, 0.82f, 0.25f), new Vector2(340f, 26f), new Vector2(48f, 20f));
+        toastName = MakeText(toast, "Nombre", 26, TextAnchor.MiddleLeft, Color.white, new Vector2(340f, 36f), new Vector2(48f, -14f));
         toastTitle.text = "LOGRO DESBLOQUEADO";
         toast.gameObject.SetActive(false);
     }
@@ -223,7 +223,7 @@ public class Achievements : MonoBehaviour
         {
             float t = 3.2f - (toastEnd - Time.unscaledTime);   // entra deslizando y sale hacia arriba
             float rise = 1f - Mathf.Clamp01(t / 0.3f);
-            float y = -150f + 200f * rise * rise + 200f * Mathf.Clamp01((t - 2.9f) / 0.3f);
+            float y = -14f + 200f * rise * rise + 200f * Mathf.Clamp01((t - 2.9f) / 0.3f);
             toast.anchoredPosition = new Vector2(0f, y);
         }
     }
