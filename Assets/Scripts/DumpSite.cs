@@ -35,7 +35,8 @@ public class DumpSite : MonoBehaviour
         clean = true;
         GameManager.I.Purity.Add(purityBonus);
         GameManager.I.AddCredits(creditBonus);
-        AudioManager.Play(Sfx.Recycle);
+        AudioManager.Play(Sfx.Strike, 1f);
+        Achievements.Unlock("botadero");
         GameManager.I.Alert($"¡Botadero recuperado! Pureza +{purityBonus:0}% · +{creditBonus} Eco-Créditos", 3f);
         sign.text = "ZONA RECUPERADA";
         sign.color = new Color(0.55f, 1f, 0.55f);

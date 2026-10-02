@@ -53,6 +53,7 @@ public class GameManager : MonoBehaviour
     public int SectorIndex => sectorIndex;
     public float SectorTime => Sector.duration - timeLeft;
     public int Scared { get; private set; }
+    public int Convinced { get; private set; }
     public int Polluted { get; private set; }
     public int Recycled { get; set; }
     public int Rescued { get; private set; }
@@ -62,8 +63,9 @@ public class GameManager : MonoBehaviour
     public bool Ended => State == GamePhase.Won || State == GamePhase.Lost;
     public bool Running => State == GamePhase.Playing || State == GamePhase.Tutorial;
 
-    private int sectorIndex;
-    private float timeLeft, alertUntil, bannerUntil;
+    private int sectorIndex, chainCount;
+    private float timeLeft, alertUntil, bannerUntil, lastChain;
+    private UnityEngine.UI.Image[] breakStars, endStars;
     private GamePhase beforePause;
     private Coroutine ambience;
 
@@ -71,6 +73,8 @@ public class GameManager : MonoBehaviour
     {
         I = this;
         foreach (var p in new[] { menuPanel, pausePanel, breakPanel, endPanel }) p.SetActive(false);
+        breakStars = Achievements.MakeStars((RectTransform)breakPanel.transform, new Vector2(0f, 100f));
+        endStars = Achievements.MakeStars((RectTransform)endPanel.transform, new Vector2(0f, 100f));
         alertText.text = bannerText.text = "";
 #if UNITY_WEBGL
         quitButton.SetActive(false);   // el navegador no se cierra desde el juego
@@ -105,6 +109,7 @@ public class GameManager : MonoBehaviour
     {
         backpack.SetBonus(3 * Progress.Data.backpack);
         player.SprintBonus = 0.3f * Progress.Data.boots;
+        Pet.Apply(Progress.Data.pet);
     }
 
     // ---------- estadisticas del sector ----------
@@ -112,12 +117,52 @@ public class GameManager : MonoBehaviour
     public void RegisterKick()
     {
         Scared++;
+        Progress.Data.totalScared++;
+        Achievements.Unlock("primera_patada");
+        Combo();
+    }
+
+    // concientizar tambien cuenta para la racha: ahuyentar sin violencia da mas creditos y algo de pureza
+    public void RegisterConvince()
+    {
+        Convinced++;
+        Progress.Data.totalConvinced++;
+        if (Progress.Data.totalConvinced >= 5) Achievements.Unlock("orador");
+        AddCredits(12);
+        Purity.Add(1.5f);
+        Alert("¡Concientizado! +12 Eco-Créditos · Pureza +1.5%", 2.5f);
+        Combo();
+    }
+
+    void Combo()
+    {
         Streak++;
         BestStreak = Mathf.Max(BestStreak, Streak);
+        if (Streak >= 5) Achievements.Unlock("racha5");
         if (Streak < 2) return;
         int bonus = 5 * Mathf.Min(Streak, 5);
         AddCredits(bonus);
+        AudioManager.Play(Sfx.Combo, 0.9f + 0.09f * Mathf.Min(Streak, 10));   // cada racha suena un poco mas aguda
         Alert($"¡Racha x{Streak}! +{bonus} Eco-Créditos", 2f);
+    }
+
+    // patada cargada: cada infractor que el lanzado derriba suma al "pleno"
+    public void ResetChain() { chainCount = 1; lastChain = Time.time; }
+
+    public void RegisterChain()
+    {
+        if (Time.time - lastChain > 1.5f) chainCount = 1;
+        lastChain = Time.time;
+        chainCount++;
+        int bonus = 10 * (chainCount - 1);
+        AddCredits(bonus);
+        if (chainCount == 2) Alert($"¡Choque! +{bonus} Eco-Créditos", 2f);
+        else
+        {
+            Alert($"¡PLENO x{chainCount}! +{bonus} Eco-Créditos", 2.5f);
+            AudioManager.Play(Sfx.Strike, 1f);
+            Achievements.Unlock("pleno");
+        }
     }
 
     // una bolsa llego al rio; la de un infractor corta la racha, la que arrastra la lluvia no
@@ -127,8 +172,17 @@ public class GameManager : MonoBehaviour
         if (breaksStreak) Streak = 0;
     }
 
-    public void RegisterRescue() => Rescued++;
-    public void RegisterPlant() => Planted++;
+    public void RegisterRescue()
+    {
+        Rescued++;
+        if (Rescued >= 5) Achievements.Unlock("rescatista");
+    }
+
+    public void RegisterPlant()
+    {
+        Planted++;
+        if (Planted >= 3) Achievements.Unlock("quenas");
+    }
 
     // ---------- avisos ----------
     public void Alert(string msg, float seconds = 3f)
@@ -205,7 +259,7 @@ public class GameManager : MonoBehaviour
     {
         State = GamePhase.Menu;
         Time.timeScale = 0f;
-        menuInfoText.text = $"Récord de pureza {Progress.Data.bestPurity:0}%   ·   Eco-Créditos {Credits}";
+        menuInfoText.text = $"Récord de pureza {Progress.Data.bestPurity:0}%  ·  Eco-Créditos {Credits}  ·  Estrellas {Achievements.TotalStars()}/6  ·  Logros {Achievements.Count}/12";
         menuFactText.text = $"¿Sabías que? {WaterFacts.Random()}";
         menuPanel.SetActive(true);
     }
@@ -240,11 +294,12 @@ public class GameManager : MonoBehaviour
         foreach (var inf in new List<Infractor>(Infractor.Active)) Destroy(inf.gameObject);
         foreach (var f in FindObjectsByType<FloatingTrash>(FindObjectsSortMode.None)) Destroy(f.gameObject);
         backpack.TakeAll();
-        Scared = Polluted = Recycled = Rescued = Planted = Streak = BestStreak = 0;
+        Scared = Convinced = Polluted = Recycled = Rescued = Planted = Streak = BestStreak = chainCount = 0;
         timeLeft = s.duration;
         Purity.Set(startPurity);
         Warp(s.start);
         spawner.Configure(s);
+        Pet.Teleport(s.start);
         SetAmbience(s, 2.5f);
         State = GamePhase.Playing;
         Time.timeScale = 1f;
@@ -267,7 +322,7 @@ public class GameManager : MonoBehaviour
         else State = beforePause;
         Time.timeScale = on ? 0f : 1f;
         AudioManager.Play(Sfx.Click);
-        if (on) pauseFactText.text = $"¿Sabías que? {WaterFacts.Random()}";
+        if (on) pauseFactText.text = $"¿Sabías que? {WaterFacts.Random()}\n\n<size=20><color=#ffd84a>L: logros</color></size>";
         pausePanel.SetActive(on);
     }
 
@@ -312,7 +367,7 @@ public class GameManager : MonoBehaviour
         timeText.text = State == GamePhase.Tutorial ? "Tutorial" : $"S{sectorIndex + 1} {t / 60}:{t % 60:00}";
         creditsText.text = $"{Credits}";
         backpackText.text = $"{backpack.Count}/{backpack.Capacity}";
-        statsText.text = $"Fuera {Scared} Río {Polluted} Racha x{Streak}";
+        statsText.text = $"Fuera {Scared + Convinced} Río {Polluted} Racha x{Streak}";
     }
 
     void TickTimer()
@@ -329,31 +384,50 @@ public class GameManager : MonoBehaviour
         bool last = sectorIndex == sectors.Length - 1;
         Time.timeScale = 0f;
         foreach (var inf in new List<Infractor>(Infractor.Active)) Destroy(inf.gameObject);
-        string summary = $"<size=22>Recicladas {Recycled} · Rescatadas del río {Rescued} · Llegaron al río {Polluted}\n"
-                       + $"Ahuyentados {Scared} · Mejor racha x{BestStreak} · Queñuas plantadas {Planted}</size>";
-        string fact = $"\n\n<size=22><color=#9fe3ff>¿Sabías que? {WaterFacts.Random()}</color></size>";
+        int stars = p >= winPurity ? 1 : 0;
+        bool star2 = p >= 90f, star3 = BestStreak >= 5 && Recycled >= 8;
+        if (stars > 0) stars += (star2 ? 1 : 0) + (star3 ? 1 : 0);
+        if (stars > 0)
+        {
+            Progress.Data.stars[sectorIndex] = Mathf.Max(Progress.Data.stars[sectorIndex], stars);
+            if (Polluted == 0) Achievements.Unlock("cero_bolsas");
+            if (stars == 3) Achievements.Unlock("constelacion");
+            if (last) Achievements.Unlock("rio_limpio");
+            Progress.Save();
+        }
+        string Gold(bool ok, string t) => ok ? $"<color=#ffd84a>{t}</color>" : $"<color=#6f7d94>{t}</color>";
+        string starLine = stars > 0
+            ? $"<size=44> \n</size><size=20>{Gold(true, "Certificado")}  ·  {Gold(star2, "Pureza 90%")}  ·  {Gold(star3, "Racha x5 y 8 recicladas")}</size>\n"   // el hueco de arriba es para las estrellas
+            : "";
+        string summary = starLine + $"<size=20>Recicladas {Recycled} · Rescatadas del río {Rescued} · Llegaron al río {Polluted}\n"
+                       + $"Ahuyentados {Scared} · Concientizados {Convinced} · Mejor racha x{BestStreak} · Queñuas plantadas {Planted}</size>";
+        string fact = $"\n<size=20><color=#9fe3ff>¿Sabías que? {WaterFacts.Random()}</color></size>";
 
         if (p < winPurity)
         {
             State = GamePhase.Lost;
-            AudioManager.Play(Sfx.Lose);
+            AudioManager.Play(Sfx.Lose, 1f);
+            foreach (var st in endStars) st.gameObject.SetActive(false);
             endText.text = $"El río sigue contaminado\nSector {sectorIndex + 1} sin certificar\n\nPureza {p:0}% (meta {winPurity:0}%)\n{summary}\nEco-Créditos {Credits}{fact}";
             endPanel.SetActive(true);
         }
         else if (last)
         {
             State = GamePhase.Won;
-            AudioManager.Play(Sfx.Win);
+            AudioManager.Play(Sfx.Win, 1f);
             player.Cheer(5f);
+            foreach (var st in endStars) st.gameObject.SetActive(true);
+            Achievements.ShowStars(endStars, stars, this);
             endText.text = $"¡RÍO LIMPIO!\nCertificación lograda: el Qhali vuelve a la vida\n\nPureza final {p:0}% (récord {Progress.Data.bestPurity:0}%)\n{summary}\nEco-Créditos {Credits}{fact}";
             endPanel.SetActive(true);
         }
         else
         {
             State = GamePhase.Break;
-            AudioManager.Play(Sfx.Win);
+            AudioManager.Play(Sfx.Win, 1f);
             player.Cheer(5f);
-            breakText.text = $"Sector {sectorIndex + 1} certificado\nPureza {p:0}%\n{summary}\n\nSiguiente: Sector {sectorIndex + 2} · {sectors[sectorIndex + 1].name}{fact}";
+            Achievements.ShowStars(breakStars, stars, this);
+            breakText.text = $"Sector {sectorIndex + 1} certificado\nPureza {p:0}%\n{summary}\nSiguiente: Sector {sectorIndex + 2} · {sectors[sectorIndex + 1].name}{fact}";
             breakPanel.SetActive(true);
         }
     }

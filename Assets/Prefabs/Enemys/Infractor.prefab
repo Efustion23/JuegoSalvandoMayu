@@ -171,6 +171,7 @@ MonoBehaviour:
   trashPrefab: {fileID: 4608196083011657851, guid: 55e760d4500ac444ea375aa8d9d9e6ed, type: 3}
   splashPrefab: {fileID: 1879256270235941938, guid: 91d6daf9982b6ba4384c2740933018a4, type: 3}
   alertIcon: {fileID: 5973140973853539565}
+  bubbleFont: {fileID: 12800000, guid: 73adb45c4ba9f0b4c8dbb1ded6c85547, type: 3}
 --- !u!1 &5973140973853539565
 GameObject:
   m_ObjectHideFlags: 0

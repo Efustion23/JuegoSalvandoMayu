@@ -26,6 +26,9 @@ public class PlayerController : MonoBehaviour
     private const float KickLength = 0.32f, LungeSpeed = 4f;
     private static readonly string[] words = { "¡PAF!", "¡ZAS!", "¡PUM!", "¡TOMA!" };
 
+    private const float ChargeMin = 0.2f, ChargeFull = 1.1f;   // segundos de espacio para empezar a cargar / carga maxima
+    private static readonly string[] powerWords = { "¡BOOM!", "¡BOLOS!", "¡PATADÓN!" };
+
     private Vector2 moveInput;
     private Vector2 facing = Vector2.down;
     private bool sprinting;
@@ -33,9 +36,31 @@ public class PlayerController : MonoBehaviour
     private bool struck;
     private Rigidbody2D rb;
 
+    private bool charging;
+    private float chargeStart, kickPower, nextTick;
+    private SpriteRenderer chargeBack, chargeFill;
+
+    // 0 = suelta rapido (patada normal); 1 = carga maxima
+    float ChargeLevel => charging ? Mathf.Clamp01((Time.time - chargeStart - ChargeMin) / (ChargeFull - ChargeMin)) : 0f;
+    bool ChargingVisible => charging && Time.time - chargeStart > ChargeMin;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        var px = PixelSprite.Make(new[] { "w" }, new System.Collections.Generic.Dictionary<char, Color32> { ['w'] = new Color32(255, 255, 255, 255) }, 0.5f);
+        chargeBack = MakeBar("CargaFondo", px, new Color(0.05f, 0.06f, 0.12f, 0.85f), 19);
+        chargeFill = MakeBar("CargaRelleno", px, Color.white, 20);
+        chargeBack.transform.localScale = new Vector3(1.3f * 16f, 0.2f * 16f, 1f);
+    }
+
+    SpriteRenderer MakeBar(string name, Sprite sprite, Color color, int order)
+    {
+        var g = new GameObject(name);
+        g.transform.SetParent(transform, false);
+        g.transform.localPosition = new Vector3(0f, 1.55f, 0f);
+        var r = g.AddComponent<SpriteRenderer>();
+        r.sprite = sprite; r.color = color; r.sortingLayerName = "Decoration"; r.sortingOrder = order; r.enabled = false;
+        return r;
     }
 
     bool Kicking => Time.time - kickStart < KickLength;
@@ -52,14 +77,38 @@ public class PlayerController : MonoBehaviour
         sprinting = value.isPressed;
     }
 
+    // Espacio: un toque corto da la patada normal al soltar; si se mantiene, se carga y la patada sale mas fuerte
     void OnPatada(InputValue value)
     {
-        if (!value.isPressed || Time.timeScale == 0f || Time.time < nextKick) return;
-        nextKick = Time.time + kickCooldown;
+        if (value.isPressed)
+        {
+            if (Time.timeScale == 0f || Time.time < nextKick || Kicking || !KickHeld()) return;
+            charging = true;
+            chargeStart = Time.time;
+            nextTick = ChargeMin;
+            return;
+        }
+        ReleaseKick();
+    }
+
+    // estado real de los controles de patada: si se pierde un evento de soltar, la carga no se queda trabada
+    static bool KickHeld() =>
+        (Keyboard.current != null && Keyboard.current.spaceKey.isPressed) ||
+        (Mouse.current != null && Mouse.current.leftButton.isPressed) ||
+        (Gamepad.current != null && Gamepad.current.buttonWest.isPressed);
+
+    void ReleaseKick()
+    {
+        if (!charging) return;
+        charging = false;
+        float p = Time.time - chargeStart < ChargeMin ? 0f : Mathf.Clamp01((Time.time - chargeStart - ChargeMin) / (ChargeFull - ChargeMin));
+        if (Time.timeScale == 0f) return;
+        kickPower = p;
+        nextKick = Time.time + kickCooldown + 0.5f * p;
         kickStart = Time.time;
         struck = false;
         cheerUntil = 0f;
-        AudioManager.Play(Sfx.Kick);
+        AudioManager.Play(p > 0.3f ? Sfx.PowerKick : Sfx.Kick);
     }
 
     // Reacciones que otros scripts pueden pedir
@@ -70,24 +119,28 @@ public class PlayerController : MonoBehaviour
     void Strike()
     {
         struck = true;
-        Vector2 center = (Vector2)transform.position + Vector2.down * 0.2f + facing * 0.9f;
-        foreach (var hit in Physics2D.OverlapCircleAll(center, 0.75f))
+        float p = kickPower;
+        Vector2 center = (Vector2)transform.position + Vector2.down * 0.2f + facing * (0.9f + 0.5f * p);
+        if (p > 0.2f) GameManager.I.ResetChain();
+        foreach (var hit in Physics2D.OverlapCircleAll(center, 0.75f + 0.4f * p))
         {
             var inf = hit.GetComponent<Infractor>();
-            if (inf == null || !inf.TryKick(transform.position)) continue;
-            Instantiate(impactFx, inf.transform.position, Quaternion.identity);
-            Instantiate(wordFx, inf.transform.position + Vector3.up * 0.8f, Quaternion.identity).GetComponent<FloatText>().Show(words[Random.Range(0, words.Length)]);
+            if (inf == null || !inf.TryKick(transform.position, p)) continue;
+            Instantiate(impactFx, inf.transform.position, Quaternion.identity).transform.localScale *= 1f + p;
+            string word = p > 0.5f ? powerWords[Random.Range(0, powerWords.Length)] : words[Random.Range(0, words.Length)];
+            Instantiate(wordFx, inf.transform.position + Vector3.up * 0.8f, Quaternion.identity).GetComponent<FloatText>().Show(word);
             AudioManager.Play(Sfx.Impact);
-            ScreenShake.Shake(0.3f, 0.22f);
-            StartCoroutine(HitStop());
+            ScreenShake.Shake(0.3f + 0.6f * p, 0.22f + 0.2f * p);
+            StartCoroutine(HitStop(p));
+            if (p >= 0.95f) Achievements.Unlock("patadon");
         }
     }
 
-    System.Collections.IEnumerator HitStop()
+    System.Collections.IEnumerator HitStop(float power = 0f)
     {
         if (Time.timeScale != 1f) yield break;
         Time.timeScale = 0.05f;
-        yield return new WaitForSecondsRealtime(0.07f);
+        yield return new WaitForSecondsRealtime(0.07f + 0.08f * power);
         if (Time.timeScale == 0.05f) Time.timeScale = 1f;
     }
 
@@ -95,9 +148,38 @@ public class PlayerController : MonoBehaviour
     {
         float t = Time.time - kickStart;
         if (Kicking)
-            rb.linearVelocity = (t > kickTimes[1] && t < kickTimes[3]) ? facing * LungeSpeed : Vector2.zero;
+            rb.linearVelocity = (t > kickTimes[1] && t < kickTimes[3]) ? facing * LungeSpeed * (1f + 1.2f * kickPower) : Vector2.zero;
+        else if (ChargingVisible)
+            rb.linearVelocity = moveInput * moveSpeed * 0.4f;   // cargando: avanza despacio
         else
             rb.linearVelocity = moveInput * moveSpeed * (sprinting ? sprintMultiplier + SprintBonus : 1f);
+    }
+
+    // barra de carga sobre la cabeza, tics de sonido que suben de tono y destello al llegar al maximo
+    void UpdateCharge()
+    {
+        if (charging && (Time.timeScale == 0f || !GameManager.I.Running)) charging = false;   // pausa o menu: se cancela
+        if (charging && !KickHeld()) ReleaseKick();
+        bool show = ChargingVisible;
+        chargeBack.enabled = chargeFill.enabled = show;
+        if (!show) return;
+        float lvl = ChargeLevel;
+        chargeFill.color = Color.Lerp(new Color(1f, 0.9f, 0.3f), new Color(1f, 0.25f, 0.15f), lvl);
+        if (lvl >= 1f) chargeFill.color = Color.Lerp(chargeFill.color, Color.white, Mathf.Abs(Mathf.Sin(Time.time * 18f)));
+        float w = 1.2f * Mathf.Max(lvl, 0.04f);
+        chargeFill.transform.localPosition = new Vector3(-0.6f + w / 2f, 1.55f, 0f);
+        chargeFill.transform.localScale = new Vector3(w * 16f, 0.12f * 16f, 1f);
+        if (Time.time - chargeStart >= nextTick && lvl < 1f)
+        {
+            nextTick += 0.16f;
+            AudioManager.Play(Sfx.Charge, 0.8f + 1.3f * lvl, 0.7f);
+        }
+        else if (lvl >= 1f && nextTick < 90f)
+        {
+            nextTick = 99f;
+            AudioManager.Play(Sfx.Charge, 2.6f);
+            ScreenShake.Shake(0.08f, 0.1f);
+        }
     }
 
     void Update()
@@ -116,6 +198,8 @@ public class PlayerController : MonoBehaviour
             if (f >= 1 && !struck) Strike();
             sprite = (dir == 1 ? kickSide : dir == 0 ? kickDown : kickUp)[f];
         }
+        else if (ChargingVisible)
+            sprite = crouch[dir];
         else if (celebrating)
             sprite = cheer[(int)(Time.unscaledTime * 5f) % 2];
         else if (Time.time < pickupUntil)
@@ -131,6 +215,7 @@ public class PlayerController : MonoBehaviour
         else if (celebrating) visual.flipX = false;
 
         Animate(moving);
+        UpdateCharge();
     }
 
     // rebote, inclinacion al correr, agachado y salto (todo sobre el hijo Visual)
@@ -144,6 +229,7 @@ public class PlayerController : MonoBehaviour
         float tilt = 0f;
         if (moving && sprinting) { targetScale = new Vector3(0.95f, 1.07f, 1f); tilt = facing.x != 0 ? -7f * facing.x : 0f; }
         if (Time.time < pickupUntil) targetScale = new Vector3(1.08f, 0.92f, 1f);
+        if (ChargingVisible) targetScale = new Vector3(1f + 0.12f * ChargeLevel, 0.92f - 0.1f * ChargeLevel, 1f);   // se agacha tomando impulso
         v.localPosition = new Vector3(0f, bob + hop, 0f);
         v.localScale = Vector3.Lerp(v.localScale, targetScale, Time.unscaledDeltaTime * 14f);
         v.localRotation = Quaternion.Lerp(v.localRotation, Quaternion.Euler(0f, 0f, tilt), Time.unscaledDeltaTime * 14f);

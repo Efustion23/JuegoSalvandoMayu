@@ -59,9 +59,9 @@ public class Tutorial : MonoBehaviour
         Say("Llévala a la estación de reciclaje (tachos, en la base al noroeste).\nEntra a la zona para cambiarla por Eco-Créditos");
         yield return new WaitUntil(() => GameManager.I.Credits > credits);
 
-        int scared = GameManager.I.Scared;
-        Say("¡Un infractor! Corre hacia él y patéalo con ESPACIO\nantes de que tire la bolsa al río");
-        while (GameManager.I.Scared == scared)
+        int scared = GameManager.I.Scared + GameManager.I.Convinced;
+        Say("¡Un infractor! Acércate y mantén E para concientizarlo.\nSi se niega, pateálo con ESPACIO (mantenlo para una patada cargada)");
+        while (GameManager.I.Scared + GameManager.I.Convinced == scared)
         {
             if (Infractor.Active.Count == 0) { yield return new WaitForSeconds(1f); spawner.SpawnNear(player.position.x); }
             yield return null;

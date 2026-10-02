@@ -130,7 +130,7 @@ public class Reforestation : MonoBehaviour
         s.plantedAt = Time.time;
         s.sr.sprite = treeSprite;
         s.sr.sortingLayerName = "Player"; s.sr.sortingOrder = 0; s.sr.spriteSortPoint = SpriteSortPoint.Pivot;
-        AudioManager.Play(Sfx.Buy);
+        AudioManager.Play(Sfx.Plant);
         gm.RegisterPlant();
         gm.Alert("¡Queñua plantada! Sus raíces protegen la ribera", 2.5f);
     }

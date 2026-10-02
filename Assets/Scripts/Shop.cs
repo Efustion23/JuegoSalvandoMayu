@@ -12,6 +12,7 @@ public class Shop : MonoBehaviour
         new Item { name = "Botas de Sprint",       desc = "+0.3 de velocidad al correr",     prices = new[] { 60, 120 } },
         new Item { name = "Mochila Expandida",     desc = "+3 espacios en la mochila",       prices = new[] { 50, 100, 150 } },
         new Item { name = "Silbato Sónico",        desc = "Flecha hacia el infractor más cercano", prices = new[] { 80 } },
+        new Item { name = "Nutria Mayu",           desc = "Te sigue y trae la basura cercana (Nv3: saca bolsas del río)", prices = new[] { 90, 160, 240 } },
     };
 
     [SerializeField] private GameObject panel;
@@ -26,11 +27,11 @@ public class Shop : MonoBehaviour
 
     void Start() => panel.SetActive(false);
 
-    static int Level(int i) => i == 0 ? Progress.Data.boots : i == 1 ? Progress.Data.backpack : Progress.Data.whistle;
+    static int Level(int i) => i == 0 ? Progress.Data.boots : i == 1 ? Progress.Data.backpack : i == 2 ? Progress.Data.whistle : Progress.Data.pet;
 
     static void SetLevel(int i, int v)
     {
-        if (i == 0) Progress.Data.boots = v; else if (i == 1) Progress.Data.backpack = v; else Progress.Data.whistle = v;
+        if (i == 0) Progress.Data.boots = v; else if (i == 1) Progress.Data.backpack = v; else if (i == 2) Progress.Data.whistle = v; else Progress.Data.pet = v;
     }
 
     void Update()
@@ -52,6 +53,7 @@ public class Shop : MonoBehaviour
         if (kb.digit1Key.wasPressedThisFrame) Buy(0);
         if (kb.digit2Key.wasPressedThisFrame) Buy(1);
         if (kb.digit3Key.wasPressedThisFrame) Buy(2);
+        if (kb.digit4Key.wasPressedThisFrame) Buy(3);
     }
 
     void Toggle(bool value)
@@ -69,6 +71,7 @@ public class Shop : MonoBehaviour
         if (lvl >= items[i].prices.Length) return;
         if (!GameManager.I.TrySpend(items[i].prices[lvl])) { AudioManager.Play(Sfx.Deny); Refresh("Eco-Créditos insuficientes"); return; }
         AudioManager.Play(Sfx.Buy);
+        if (i == 3) { AudioManager.Play(Sfx.Pet); Achievements.Unlock("amigo"); }
         SetLevel(i, lvl + 1);
         Progress.Save();
         GameManager.I.ApplyUpgrades();
@@ -82,7 +85,7 @@ public class Shop : MonoBehaviour
         {
             int lvl = Level(i), max = items[i].prices.Length;
             string price = lvl >= max ? "MÁXIMO" : $"{items[i].prices[lvl]} créditos";
-            s += $"[{i + 1}] {items[i].name}  Nv {lvl}/{max}  ·  {price}\n      {items[i].desc}\n\n";
+            s += $"[{i + 1}] {items[i].name}  Nv {lvl}/{max}  ·  {price}\n<size=18><color=#9fb4cc>      {items[i].desc}</color></size>\n\n";
         }
         body.text = s + msg + "\n\nE: cerrar";
     }

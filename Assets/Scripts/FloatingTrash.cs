@@ -52,7 +52,7 @@ public class FloatingTrash : MonoBehaviour
         }
         gm.Purity.Add(Recover);
         gm.RegisterRescue();
-        AudioManager.Play(Sfx.Pickup);
+        AudioManager.Play(Sfx.Rescue);
         gm.Player.Pickup();
         gm.Alert($"¡Bolsa rescatada del río! Pureza +{Recover:0}%", 2f);
         Destroy(gameObject);
