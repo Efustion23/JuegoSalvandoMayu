@@ -74,8 +74,20 @@ Builds/         Compilaciones (no se versionan)
 - `Musica/generar_midi.js` (`node generar_midi.js`): genera los MIDI de la banda sonora.
 
 ## Compilar
-- **Windows:** *File > Build Profiles > Windows*, escena `SampleScene`.
-- **WebGL:** instala el módulo *Web Build Support* y compila con el perfil *Web*. El botón *Salir* se oculta en la versión web.
+Desde Unity: menú **Herramientas > Compilar para Web (WebGL)** o **Compilar para Windows**. Las compilaciones se guardan en `Builds/` (no se versionan).
+
+Por línea de comandos, con Unity cerrado:
+```bash
+Unity.exe -batchmode -quit -nographics -projectPath <ruta> -buildTarget WebGL -executeMethod BuildTools.BuildWebBatch -logFile build.log
+```
+(`BuildTools.BuildWindowsBatch` para Windows.)
+
+### Versión web
+- Necesita el módulo **Web Build Support** de Unity (reinicia Unity después de instalarlo).
+- Usa compresión Gzip con *decompression fallback*, así que funciona en cualquier alojamiento sin configurar cabeceras. Pesa unos 33 MB.
+- Para probarla en local hay que servirla por HTTP (no abre con doble clic): por ejemplo `npx serve Builds/Web` y abrir `http://localhost:3000`.
+- Para publicarla (por ejemplo en **itch.io**), sube un `.zip` con el contenido de `Builds/Web` marcándolo como juego HTML.
+- El botón *Salir* se oculta en la versión web y el navegador necesita un clic dentro del juego para darle el foco al teclado.
 
 ## Créditos
 - **Arte:** Kenney *Tiny Town* (CC0) · *Cute Fantasy Free* · *Farm RPG FREE 16x16 - Tiny Asset Pack* · *Free Bridges Top-Down Pixel Art Asset Pack* (licencia de CraftPix).
