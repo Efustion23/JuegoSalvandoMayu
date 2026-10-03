@@ -1,4 +1,4 @@
-# Cuidando al Mayu
+# Salvando al Mayu
 
 Videojuego 2D de acción y gestión ambiental, hecho en **Unity 6** para la Universidad Continental.
 Eres **Samy**, guardiana del río **Qhali**: ahuyentas o concientizas a quienes tiran basura, rescatas lo que cae al agua, reciclas por **Eco-Créditos** y mejoras tu equipo. Cada sector debe terminar con la **Pureza del río en 80 % o más**.
@@ -83,6 +83,7 @@ Unity.exe -batchmode -quit -nographics -projectPath <ruta> -buildTarget WebGL -e
 (`BuildTools.BuildWindowsBatch` para Windows.)
 
 ### Versión web
+- **Juega en el navegador:** https://play.unity.com/en/games/5b535be2-190e-4ad9-86af-22b88b19b0fc/salvando-al-mayu (Unity Play).
 - Necesita el módulo **Web Build Support** de Unity (reinicia Unity después de instalarlo).
 - Usa compresión Gzip con *decompression fallback*, así que funciona en cualquier alojamiento sin configurar cabeceras. Pesa unos 33 MB.
 - Para probarla en local hay que servirla por HTTP (no abre con doble clic): por ejemplo `npx serve Builds/Web` y abrir `http://localhost:3000`.

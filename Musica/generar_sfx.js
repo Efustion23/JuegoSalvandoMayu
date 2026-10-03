@@ -1,4 +1,4 @@
-// Sintetiza los efectos de sonido de "Cuidando al Mayu" (sin muestras externas) y los guarda en Assets/Audio.
+// Sintetiza los efectos de sonido de "Salvando al Mayu" (sin muestras externas) y los guarda en Assets/Audio.
 // Uso:  node generar_sfx.js        Si cambias un efecto, vuelve a ejecutarlo y Unity lo reimporta.
 const fs = require("fs");
 const path = require("path");

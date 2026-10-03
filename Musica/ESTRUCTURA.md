@@ -1,4 +1,4 @@
-# Música de "Cuidando al Mayu" — guía para FL Studio
+# Música de "Salvando al Mayu" — guía para FL Studio
 
 Hay 5 piezas en MIDI (carpeta `Musica/`). Cada archivo trae una pista por instrumento y el tempo ya puesto.
 Arrástralos a FL Studio (o `File > Import > MIDI file`) y asigna un sonido a cada canal del Channel Rack.

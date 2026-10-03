@@ -1,4 +1,4 @@
-// Genera los MIDI de "Cuidando al Mayu". Uso:  node generar_midi.js   (crea los .mid en esta carpeta)
+// Genera los MIDI de "Salvando al Mayu". Uso:  node generar_midi.js   (crea los .mid en esta carpeta)
 // Cada pieza define tempo, tonalidad y, por compas, el acorde; las melodias se escriben como texto ("E5:1.5 D5:.5 r:1").
 const fs = require("fs");
 const path = require("path");

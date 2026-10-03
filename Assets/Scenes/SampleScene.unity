@@ -18165,7 +18165,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Cuidando al Mayu
+  m_Text: Salvando al Mayu
 --- !u!222 &603430616
 CanvasRenderer:
   m_ObjectHideFlags: 0
