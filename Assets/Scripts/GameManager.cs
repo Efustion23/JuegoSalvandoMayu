@@ -401,7 +401,7 @@ public class GameManager : MonoBehaviour
             : "";
         string summary = starLine + $"<size=20>Recicladas {Recycled} · Rescatadas del río {Rescued} · Llegaron al río {Polluted}\n"
                        + $"Ahuyentados {Scared} · Concientizados {Convinced} · Mejor racha x{BestStreak} · Queñuas plantadas {Planted}</size>";
-        string fact = $"\n<size=20><color=#9fe3ff>¿Sabías que? {WaterFacts.Random()}</color></size>";
+        string fact = $"\n<size=20><color=#9fe3ff>{WaterFacts.Wrap("¿Sabías que? " + WaterFacts.Random(), 62)}</color></size>";
 
         if (p < winPurity)
         {
