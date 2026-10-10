@@ -28,6 +28,23 @@ public class MenuFx : MonoBehaviour
             if (b.GetComponent<ButtonPop>() == null) b.gameObject.AddComponent<ButtonPop>();
         BuildInfoRow();
         DimFooter();
+        CloseQuitGap();
+    }
+
+    // en la web el boton Salir se oculta: sube lo que hay debajo para que no quede un hueco
+    void CloseQuitGap()
+    {
+        var quit = menu.transform.Find("Salir");
+        var tutorial = menu.transform.Find("VerTutorial") as RectTransform;
+        if (quit == null || quit.gameObject.activeSelf || tutorial == null) return;
+        float gap = tutorial.anchoredPosition.y - ((RectTransform)quit).anchoredPosition.y;
+        foreach (var n in new[] { "Dato", "FichasInfo", "FondoControles", "Controles" })
+            if (menu.transform.Find(n) is RectTransform rt) rt.anchoredPosition += new Vector2(0f, gap);
+        if (menu.transform.Find("Marco") is RectTransform frame)   // el marco se acorta por abajo
+        {
+            frame.sizeDelta -= new Vector2(0f, gap);
+            frame.anchoredPosition += new Vector2(0f, gap / 2f);
+        }
     }
 
     // la linea "Record · Eco-Creditos · Estrellas · Logros" pasa a cuatro fichas con icono

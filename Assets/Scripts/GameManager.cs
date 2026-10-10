@@ -420,7 +420,8 @@ public class GameManager : MonoBehaviour
             player.Cheer(5f);
             foreach (var st in endStars) st.gameObject.SetActive(true);
             Achievements.ShowStars(endStars, stars, this);
-            endText.text = $"¡RÍO LIMPIO!\nCertificación lograda: el Qhali vuelve a la vida\n\nPureza final {p:0}% (récord {Progress.Data.bestPurity:0}%)\n{summary}\nEco-Créditos {Credits}{fact}";
+            // misma estructura que el fin de sector (dos lineas antes de las estrellas) para que no se encimen
+            endText.text = $"¡RÍO LIMPIO! El Qhali vuelve a la vida\nPureza final {p:0}% (récord {Progress.Data.bestPurity:0}%)\n{summary}\nEco-Créditos {Credits}{fact}";
             endPanel.SetActive(true);
         }
         else

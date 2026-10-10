@@ -3,7 +3,7 @@
 Videojuego 2D de acción y gestión ambiental, hecho en **Unity 6** para la Universidad Continental.
 Eres **Samy**, el guardián del río **Qhali**: ahuyentas o concientizas a quienes tiran basura, rescatas lo que cae al agua, reciclas por **Eco-Créditos** y mejoras tu equipo. Cada sector debe terminar con la **Pureza del río en 80 % o más**.
 
-**Juega en el navegador:** https://play.unity.com/en/games/5b535be2-190e-4ad9-86af-22b88b19b0fc/salvando-al-mayu
+**Juega en el navegador:** https://play.unity.com/en/games/7c2112c8-f372-4c3c-a526-a2914d41574f/salvando-al-mayu
 
 Está ligado al **ODS 6: Agua limpia y saneamiento**, en particular a las metas **6.3** (reducir la contaminación y aumentar el reciclaje) y **6.6** (proteger y restablecer los ecosistemas relacionados con el agua).
 
@@ -26,7 +26,7 @@ Está ligado al **ODS 6: Agua limpia y saneamiento**, en particular a las metas 
 | Silenciar | `N` |
 
 ### Un sector
-1. Los **infractores** llegan a la orilla y esperan unos segundos para tirar su bolsa. Un círculo rojo y una barra avisan cuánto falta, y una **flecha roja en el borde de la pantalla** señala a los que están fuera de vista.
+1. Los **infractores** llegan a la orilla y esperan unos segundos para tirar su bolsa. Un círculo rojo y una barra avisan cuánto falta.
 2. Puedes **concientizarlos** (75 % de éxito en el Sector 1, 60 % en el Sector 2). Si se niegan, solo sirve la **patada**.
 3. Lo que cae al río **flota corriente abajo**: sácalo con la pinza antes de que se hunda.
 4. Recoge basura pisándola y **recíclala** en las estaciones para ganar Eco-Créditos.
@@ -89,7 +89,7 @@ Unity.exe -batchmode -quit -nographics -projectPath <ruta> -buildTarget WebGL -e
 (`BuildTools.BuildWindowsBatch` para Windows.)
 
 ### Versión web
-- **Juega en el navegador:** https://play.unity.com/en/games/5b535be2-190e-4ad9-86af-22b88b19b0fc/salvando-al-mayu (Unity Play).
+- **Juega en el navegador:** https://play.unity.com/en/games/7c2112c8-f372-4c3c-a526-a2914d41574f/salvando-al-mayu (Unity Play).
 - Necesita el módulo **Web Build Support** de Unity (reinicia Unity después de instalarlo).
 - Usa compresión Gzip con *decompression fallback*, así que funciona en cualquier alojamiento sin configurar cabeceras. Pesa unos 33 MB.
 - Para probarla en local hay que servirla por HTTP (no abre con doble clic): por ejemplo `npx serve Builds/Web` y abrir `http://localhost:3000`.
