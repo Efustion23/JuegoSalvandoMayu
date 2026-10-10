@@ -53,7 +53,7 @@ Cuanto más limpia está el agua, más vida vuelve: peces, patos, truchas que sa
 2. **Puente Urbano**: plaza adoquinada, mercado, mirador y mayor ritmo de infractores.
 
 ## Requisitos para abrirlo
-- **Unity 6000.3.23f1** (con los módulos que necesites: *Windows Build Support*, y *Web Build Support* para WebGL).
+- **Unity 6000.3.23f1** con el módulo *Web Build Support* (WebGL).
 - **Git LFS** instalado antes de clonar (las imágenes y el audio pesado van por LFS).
 
 ```bash
@@ -68,9 +68,9 @@ Assets/
   Scripts/      Lógica del juego (GameManager, Infractor, PlayerController, Pet, Achievements, RiverVisuals...)
   Editor/       Herramienta "Regenerar orillas del río" (RiverBankGenerator)
   Scenes/       SampleScene (única escena)
-  Audio/        Efectos y música provisional (generados por código)
+  Audio/        Música de cada pantalla (menú, sectores, victoria, derrota) y efectos generados por código
   Fonts/        Pixelify Sans y Press Start 2P
-Musica/         MIDI y guía de estructura para componer la banda sonora; generar_sfx.js
+Musica/         generar_sfx.js (efectos) y los MIDI de guía de la banda sonora
 Builds/         Compilaciones (no se versionan)
 ```
 
@@ -79,26 +79,20 @@ Builds/         Compilaciones (no se versionan)
 - `Musica/generar_sfx.js` (`node generar_sfx.js`): sintetiza los efectos de sonido en `Assets/Audio`.
 - `Musica/generar_midi.js` (`node generar_midi.js`): genera los MIDI de la banda sonora.
 
-## Compilar
-Desde Unity: menú **Herramientas > Compilar para Web (WebGL)** o **Compilar para Windows**. Las compilaciones se guardan en `Builds/` (no se versionan).
-
-Por línea de comandos, con Unity cerrado:
+## Compilar y publicar
+El juego se publica en **Unity Play**, que necesita una compilación WebGL **sin compresión**. Por línea de comandos, con Unity cerrado:
 ```bash
-Unity.exe -batchmode -quit -nographics -projectPath <ruta> -buildTarget WebGL -executeMethod BuildTools.BuildWebBatch -logFile build.log
+Unity.exe -batchmode -quit -nographics -projectPath <ruta> -buildTarget WebGL -executeMethod BuildTools.BuildWebPlayBatch -logFile build.log
 ```
-(`BuildTools.BuildWindowsBatch` para Windows.)
+La compilación queda en `Builds/WebPlay` (no se versiona). Para subirla, comprime su contenido en un `.zip` (con `index.html` en la raíz, unos 27 MB) y súbelo en Unity Play.
 
 ### Versión web
 - **Juega en el navegador:** https://play.unity.com/en/games/7c2112c8-f372-4c3c-a526-a2914d41574f/salvando-al-mayu (Unity Play).
-- Necesita el módulo **Web Build Support** de Unity (reinicia Unity después de instalarlo).
-- Usa compresión Gzip con *decompression fallback*, así que funciona en cualquier alojamiento sin configurar cabeceras. Pesa unos 33 MB.
-- Para probarla en local hay que servirla por HTTP (no abre con doble clic): por ejemplo `npx serve Builds/Web` y abrir `http://localhost:3000`.
-- Para publicarla (por ejemplo en **itch.io**), sube un `.zip` con el contenido de `Builds/Web` marcándolo como juego HTML.
 - El botón *Salir* se oculta en la versión web y el navegador necesita un clic dentro del juego para darle el foco al teclado.
 
 ## Créditos
 - **Arte:** Kenney *Tiny Town* (CC0) · *Cute Fantasy Free* · *Farm RPG FREE 16x16 - Tiny Asset Pack* · *Free Bridges Top-Down Pixel Art Asset Pack* (licencia de CraftPix).
 - **Llama:** *LPC Style Farm Animals* de Daniel Eddeland (CC-BY 3.0 / GPL 2.0+), vía OpenGameArt.
 - **Fuentes:** *Pixelify Sans* y *Press Start 2P* (SIL Open Font License).
-- **Música y efectos:** provisionales, generados por código dentro del proyecto.
+- **Música:** pistas originales creadas para el juego. **Efectos de sonido:** generados por código dentro del proyecto.
 - El resto (código, sprites dibujados por código, ajustes del mapa) es del equipo.
