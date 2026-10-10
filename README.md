@@ -1,7 +1,9 @@
 # Salvando al Mayu
 
 Videojuego 2D de acción y gestión ambiental, hecho en **Unity 6** para la Universidad Continental.
-Eres **Samy**, guardiana del río **Qhali**: ahuyentas o concientizas a quienes tiran basura, rescatas lo que cae al agua, reciclas por **Eco-Créditos** y mejoras tu equipo. Cada sector debe terminar con la **Pureza del río en 80 % o más**.
+Eres **Samy**, el guardián del río **Qhali**: ahuyentas o concientizas a quienes tiran basura, rescatas lo que cae al agua, reciclas por **Eco-Créditos** y mejoras tu equipo. Cada sector debe terminar con la **Pureza del río en 80 % o más**.
+
+**Juega en el navegador:** https://play.unity.com/en/games/5b535be2-190e-4ad9-86af-22b88b19b0fc/salvando-al-mayu
 
 Está ligado al **ODS 6: Agua limpia y saneamiento**, en particular a las metas **6.3** (reducir la contaminación y aumentar el reciclaje) y **6.6** (proteger y restablecer los ecosistemas relacionados con el agua).
 
@@ -24,14 +26,18 @@ Está ligado al **ODS 6: Agua limpia y saneamiento**, en particular a las metas 
 | Silenciar | `N` |
 
 ### Un sector
-1. Los **infractores** llegan a la orilla y esperan unos segundos para tirar su bolsa. Un círculo rojo y una barra avisan cuánto falta.
+1. Los **infractores** llegan a la orilla y esperan unos segundos para tirar su bolsa. Un círculo rojo y una barra avisan cuánto falta, y una **flecha roja en el borde de la pantalla** señala a los que están fuera de vista.
 2. Puedes **concientizarlos** (75 % de éxito en el Sector 1, 60 % en el Sector 2). Si se niegan, solo sirve la **patada**.
 3. Lo que cae al río **flota corriente abajo**: sácalo con la pinza antes de que se hunda.
 4. Recoge basura pisándola y **recíclala** en las estaciones para ganar Eco-Créditos.
 5. Una **lluvia** por sector arrastra al río la basura de la orilla, salvo la que protegen las queñuas.
 6. Los **botaderos** acumulan basura y atraen más infractores; limpiarlos da pureza y créditos.
+7. En el Sector 1 llega una **oleada** de varios infractores a la vez al minuto, y aparece **basura suelta en los senderos** para que siempre haya algo que hacer.
 
 Si encadenas acciones sin que nadie contamine, subes la **racha** y ganas créditos extra.
+
+### Retos
+Cada sector tiene **5 retos cortos** que se muestran bajo la barra de pureza (por ejemplo *Recicla 3 residuos* o *Concientiza a 1 infractor*); cada uno da Eco-Créditos al cumplirse.
 
 ### Mejoras (Almacén Municipal)
 Botas de Sprint · Mochila Expandida · Silbato Sónico (flecha hacia el infractor más cercano) · **Nutria Mayu** (te sigue y trae la basura cercana; en el nivel 3 también rescata bolsas del río).
