@@ -99,7 +99,7 @@ public class Achievements : MonoBehaviour
     }
 
     // estrella de cinco puntas dibujada pixel a pixel (encendida = dorada, apagada = gris)
-    static Sprite StarSprite(bool lit)
+    public static Sprite StarSprite(bool lit)
     {
         if (starOn != null) return lit ? starOn : starOff;
         starOn = DrawStar(new Color32(255, 214, 64, 255), new Color32(255, 246, 170, 255), new Color32(120, 70, 10, 255));
