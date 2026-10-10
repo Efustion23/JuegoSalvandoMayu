@@ -165,7 +165,7 @@ public class Achievements : MonoBehaviour
         toast.pivot = new Vector2(0.5f, 1f);
         toast.sizeDelta = new Vector2(450f, 84f);
         toast.anchoredPosition = new Vector2(0f, -14f);
-        var bg = g.GetComponent<Image>(); bg.color = new Color(0.07f, 0.1f, 0.18f, 0.95f); bg.raycastTarget = false;
+        var bg = g.GetComponent<Image>(); bg.color = new Color(0.1f, 0.17f, 0.11f, 0.95f); bg.raycastTarget = false;
         var ol = g.GetComponent<Outline>(); ol.effectColor = new Color(1f, 0.82f, 0.25f, 1f); ol.effectDistance = new Vector2(3f, -3f);
         var icon = new GameObject("Icono", typeof(RectTransform), typeof(Image));
         var irt = (RectTransform)icon.transform;
@@ -185,7 +185,7 @@ public class Achievements : MonoBehaviour
         var rt = (RectTransform)panel.transform;
         rt.SetParent(transform, false);
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one; rt.offsetMin = rt.offsetMax = Vector2.zero;
-        var bg = panel.GetComponent<Image>(); bg.color = new Color(0.03f, 0.05f, 0.1f, 0.98f);
+        var bg = panel.GetComponent<Image>(); bg.color = new Color(0.06f, 0.11f, 0.07f, 0.98f);
         panelText = MakeText(panel.transform, "Lista", 24, TextAnchor.UpperCenter, Color.white, new Vector2(1000f, 640f), new Vector2(0f, 0f));
         panelText.lineSpacing = 1.15f;
         panel.SetActive(false);

@@ -57,7 +57,7 @@ public class MenuFx : MonoBehaviour
     {
         var go = new GameObject("Ficha", typeof(RectTransform), typeof(Image), typeof(HorizontalLayoutGroup));
         go.transform.SetParent(parent, false);
-        go.GetComponent<Image>().color = new Color(0.04f, 0.07f, 0.15f, 0.85f);
+        go.GetComponent<Image>().color = new Color(0.09f, 0.16f, 0.1f, 0.88f);
         var h = go.GetComponent<HorizontalLayoutGroup>();
         h.padding = new RectOffset(10, 12, 4, 4); h.spacing = 6f; h.childAlignment = TextAnchor.MiddleCenter;
         h.childControlWidth = h.childControlHeight = true; h.childForceExpandWidth = h.childForceExpandHeight = false;
@@ -89,7 +89,7 @@ public class MenuFx : MonoBehaviour
             rt.anchorMin = controls.anchorMin; rt.anchorMax = controls.anchorMax; rt.pivot = controls.pivot;
             rt.anchoredPosition = controls.anchoredPosition;
             rt.sizeDelta = new Vector2(700f, controls.sizeDelta.y + 8f);
-            bg.GetComponent<Image>().color = new Color(0.13f, 0.19f, 0.33f, 0.75f);
+            bg.GetComponent<Image>().color = new Color(0.17f, 0.27f, 0.17f, 0.8f);
         }
         var credits = menu.transform.Find("Creditos")?.GetComponent<Text>();
         if (credits != null) { var c = credits.color; c.a = 0.55f; credits.color = c; }

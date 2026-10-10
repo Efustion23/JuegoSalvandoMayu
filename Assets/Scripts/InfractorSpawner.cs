@@ -21,6 +21,7 @@ public class InfractorSpawner : MonoBehaviour
     private SectorConfig cfg;
     private float sectorStart;
     private int alive;
+    private bool waveDone;
 
     void Start()
     {
@@ -61,6 +62,7 @@ public class InfractorSpawner : MonoBehaviour
     {
         cfg = config;
         sectorStart = Time.time;
+        waveDone = false;
     }
 
     IEnumerator Loop()
@@ -71,7 +73,8 @@ public class InfractorSpawner : MonoBehaviour
             float interval = 1f;
             if (cfg != null && GameManager.I.State == GamePhase.Playing)
             {
-                if (alive < cfg.maxAlive) SpawnRandom();
+                if (!waveDone && cfg.waveAt > 0f && Time.time - sectorStart >= cfg.waveAt) { waveDone = true; StartCoroutine(Wave()); }
+                else if (alive < cfg.maxAlive) SpawnRandom();
                 interval = Mathf.Lerp(cfg.startInterval, cfg.minInterval, (Time.time - sectorStart) / cfg.duration);
             }
             yield return new WaitForSeconds(Random.Range(0.8f, 1.2f) * interval);
@@ -87,6 +90,17 @@ public class InfractorSpawner : MonoBehaviour
         if (hot.Count > 0 && Random.value < 0.5f) pool = hot;
         bool runner = Random.value < cfg.runnerChance;
         Spawn(pool[Random.Range(0, pool.Count)], runner ? 1.7f : 1f, runner ? 1.6f : -1f, runner ? Color.HSVToRGB(0f, 0.55f, 1f) : Color.HSVToRGB(Random.value, 0.35f, 1f));
+    }
+
+    // Oleada: varios infractores juntos, sin importar el maximo del sector (buen momento para la patada cargada)
+    IEnumerator Wave()
+    {
+        GameManager.I.Banner("¡OLEADA! Llegan varios a la orilla", 3f);
+        for (int i = 0; i < cfg.waveSize; i++)
+        {
+            SpawnRandom();
+            yield return new WaitForSeconds(0.7f);
+        }
     }
 
     // Para el tutorial: infractor lento que espera mucho, en la orilla norte mas cercana a x.

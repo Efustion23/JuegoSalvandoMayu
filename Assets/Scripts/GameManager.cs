@@ -17,6 +17,8 @@ public class SectorConfig
     public float minX, maxX;                       // infractores solo aparecen en este rango de x
     public float startInterval = 12f, minInterval = 6f;
     public int maxAlive = 3;
+    public float waveAt;                           // segundo del sector en que llega una oleada (0 = sin oleada)
+    public int waveSize = 3;
     [Range(0f, 1f)] public float runnerChance;     // fraccion de infractores corredores
     public Vector2 start;                          // donde aparece el guardian
     public Color lightColor = Color.white;         // ambiente del sector
@@ -191,7 +193,7 @@ public class GameManager : MonoBehaviour
         alertUntil = Time.unscaledTime + seconds;
     }
 
-    void Banner(string msg, float seconds)
+    public void Banner(string msg, float seconds)
     {
         bannerText.text = msg;
         bannerUntil = Time.unscaledTime + seconds;
@@ -401,7 +403,7 @@ public class GameManager : MonoBehaviour
             : "";
         string summary = starLine + $"<size=20>Recicladas {Recycled} · Rescatadas del río {Rescued} · Llegaron al río {Polluted}\n"
                        + $"Ahuyentados {Scared} · Concientizados {Convinced} · Mejor racha x{BestStreak} · Queñuas plantadas {Planted}</size>";
-        string fact = $"\n<size=20><color=#9fe3ff>{WaterFacts.Wrap("¿Sabías que? " + WaterFacts.Random(), 62)}</color></size>";
+        string fact = $"\n<size=20><color=#bfe8a8>{WaterFacts.Wrap("¿Sabías que? " + WaterFacts.Random(), 62)}</color></size>";
 
         if (p < winPurity)
         {
